@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import com.example.film_catalog_android.core.ui.RatingBadge
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
+import com.example.film_catalog_android.core.ui.MovieImage
 
 @Composable
 fun DetailsScreen(
@@ -163,11 +164,13 @@ fun DetailsScreen(
                                 }
                             }
 
-                            Box(
+                            MovieImage(
+                                imageUrl = movie.imageUrl,
+                                contentDescription = movie.title,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(220.dp)
-                                    .background(MaterialTheme.colorScheme.surface)
+                                    .clip(RoundedCornerShape(16.dp))
                             )
 
                             Text(

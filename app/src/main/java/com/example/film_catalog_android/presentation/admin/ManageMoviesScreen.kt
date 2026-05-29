@@ -41,6 +41,7 @@ import com.example.film_catalog_android.core.ui.RatingBadge
 import com.example.film_catalog_android.domain.model.Movie
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.graphics.Color
+import com.example.film_catalog_android.core.ui.MovieImage
 
 @Composable
 fun ManageMoviesScreen(
@@ -254,12 +255,13 @@ private fun AdminMovieCard(
                 }
             }
 
-            Box(
+            MovieImage(
+                imageUrl = movie.imageUrl,
+                contentDescription = movie.title,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(140.dp)
                     .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
-                    .background(MaterialTheme.colorScheme.surface)
             )
 
             Text(
