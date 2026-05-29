@@ -20,12 +20,20 @@ class HomeViewModel(
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
-        loadMovies()
+        observeMovies()
         observeWatchList()
         observeUserRole()
     }
 
     fun loadMovies() {
+        observeMovies()
+    }
+
+    fun toggleWatchList(movie: Movie) {
+        WatchListStorage.toggleMovie(movie)
+    }
+
+    private fun observeMovies() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
                 isLoading = true,
@@ -33,12 +41,13 @@ class HomeViewModel(
             )
 
             try {
-                val movies = movieRepository.getMovies()
-
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    movies = movies.updateWatchListState()
-                )
+                movieRepository.observeMovies().collect { movies ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        movies = movies.updateWatchListState(),
+                        errorMessage = null
+                    )
+                }
             } catch (exception: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -46,10 +55,6 @@ class HomeViewModel(
                 )
             }
         }
-    }
-
-    fun toggleWatchList(movie: Movie) {
-        WatchListStorage.toggleMovie(movie)
     }
 
     private fun observeWatchList() {

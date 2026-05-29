@@ -1,65 +1,44 @@
 package com.example.film_catalog_android.data.repository
 
+import com.example.film_catalog_android.data.local.MovieStorage
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 
 class MockMovieRepository : MovieRepository {
 
-    private val movies = listOf(
-        Movie(
-            id = 1,
-            title = "Грязные деньги",
-            description = "История о мире финансов, рисков и сложных моральных решений.",
-            year = 2018,
-            genre = "Драма",
-            rating = 6.2,
-            imageUrl = ""
-        ),
-        Movie(
-            id = 2,
-            title = "Детство Шелдона",
-            description = "История о непростом детстве вундеркинда Шелдона Купера.",
-            year = 2017,
-            genre = "Комедия",
-            rating = 7.3,
-            imageUrl = ""
-        ),
-        Movie(
-            id = 3,
-            title = "Джентльмены",
-            description = "Криминальная комедия о столкновении интересов в преступном мире.",
-            year = 2019,
-            genre = "Криминал",
-            rating = 8.2,
-            imageUrl = ""
-        ),
-        Movie(
-            id = 4,
-            title = "Хвост Феи",
-            description = "Фэнтезийная история о магии, дружбе и приключениях.",
-            year = 2009,
-            genre = "Аниме",
-            rating = 7.9,
-            imageUrl = ""
-        )
-    )
+    override fun observeMovies(): Flow<List<Movie>> {
+        return MovieStorage.movies
+    }
 
     override suspend fun getMovies(): List<Movie> {
         delay(500)
-        return movies
+        return MovieStorage.getMovies()
     }
 
     override suspend fun searchMovies(query: String): List<Movie> {
-        delay(700)
-
-        return movies.filter { movie ->
-            movie.title.contains(query, ignoreCase = true)
-        }
+        delay(250)
+        return MovieStorage.searchMovies(query)
     }
 
     override suspend fun getMovieById(id: Long): Movie? {
         delay(300)
-        return movies.find { it.id == id }
+        return MovieStorage.getMovieById(id)
+    }
+
+    override suspend fun addMovie(movie: Movie) {
+        delay(300)
+        MovieStorage.addMovie(movie)
+    }
+
+    override suspend fun updateMovie(movie: Movie) {
+        delay(300)
+        MovieStorage.updateMovie(movie)
+    }
+
+    override suspend fun deleteMovie(movieId: Long) {
+        delay(300)
+        MovieStorage.deleteMovie(movieId)
     }
 }

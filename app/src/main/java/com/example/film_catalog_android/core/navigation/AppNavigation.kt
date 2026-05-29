@@ -141,11 +141,25 @@ fun AppNavigation() {
             }
 
             composable(Screen.ManageMovies.route) {
-                ManageMoviesScreen()
+                ManageMoviesScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onEditMovieClick = { movieId ->
+                        navController.navigate(Screen.EditMovie.createRoute(movieId))
+                    }
+                )
             }
 
             composable(Screen.AddMovie.route) {
-                AddMovieScreen()
+                AddMovieScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onMovieAdded = {
+                        navController.popBackStack()
+                    }
+                )
             }
 
             composable(
@@ -156,7 +170,14 @@ fun AppNavigation() {
                     }
                 )
             ) {
-                EditMovieScreen()
+                EditMovieScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onMovieSaved = {
+                        navController.popBackStack()
+                    }
+                )
             }
         }
     }
