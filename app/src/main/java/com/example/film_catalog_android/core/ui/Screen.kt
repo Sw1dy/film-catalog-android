@@ -42,4 +42,24 @@ sealed class Screen(
         route = "register",
         title = "Регистрация"
     )
+
+    //Админская часть
+    data object ManageMovies : Screen(
+        route = "manage_movies",
+        title = "Управление фильмами"
+    )
+
+    data object AddMovie : Screen(
+        route = "add_movie",
+        title = "Добавление фильма"
+    )
+
+    data object EditMovie : Screen(
+        route = "edit_movie/{movieId}",
+        title = "Изменение фильма"
+    ) {
+        fun createRoute(movieId: Long): String {
+            return "edit_movie/$movieId"
+        }
+    }
 }

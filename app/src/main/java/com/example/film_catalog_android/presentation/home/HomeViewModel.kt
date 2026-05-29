@@ -2,6 +2,7 @@ package com.example.film_catalog_android.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.film_catalog_android.data.local.UserSessionStorage
 import com.example.film_catalog_android.data.local.WatchListStorage
 import com.example.film_catalog_android.data.repository.MockMovieRepository
 import com.example.film_catalog_android.domain.model.Movie
@@ -21,6 +22,7 @@ class HomeViewModel(
     init {
         loadMovies()
         observeWatchList()
+        observeUserRole()
     }
 
     fun loadMovies() {
@@ -55,6 +57,16 @@ class HomeViewModel(
             WatchListStorage.movies.collect {
                 _uiState.value = _uiState.value.copy(
                     movies = _uiState.value.movies.updateWatchListState()
+                )
+            }
+        }
+    }
+
+    private fun observeUserRole() {
+        viewModelScope.launch {
+            UserSessionStorage.isAdmin.collect { isAdmin ->
+                _uiState.value = _uiState.value.copy(
+                    isAdmin = isAdmin
                 )
             }
         }

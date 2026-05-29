@@ -19,6 +19,9 @@ import com.example.film_catalog_android.presentation.search.SearchScreen
 import com.example.film_catalog_android.presentation.profile.settings.SettingsScreen
 import com.example.film_catalog_android.presentation.auth.LoginScreen
 import com.example.film_catalog_android.presentation.auth.RegisterScreen
+import com.example.film_catalog_android.presentation.admin.AddMovieScreen
+import com.example.film_catalog_android.presentation.admin.EditMovieScreen
+import com.example.film_catalog_android.presentation.admin.ManageMoviesScreen
 
 @Composable
 fun AppNavigation() {
@@ -89,6 +92,12 @@ fun AppNavigation() {
                 HomeScreen(
                     onMovieClick = { movieId ->
                         navController.navigate(Screen.Details.createRoute(movieId))
+                    },
+                    onAddMovieClick = {
+                        navController.navigate(Screen.AddMovie.route)
+                    },
+                    onManageMoviesClick = {
+                        navController.navigate(Screen.ManageMovies.route)
                     }
                 )
             }
@@ -129,6 +138,25 @@ fun AppNavigation() {
                         navController.popBackStack(Screen.Home.route, inclusive = false)
                     }
                 )
+            }
+
+            composable(Screen.ManageMovies.route) {
+                ManageMoviesScreen()
+            }
+
+            composable(Screen.AddMovie.route) {
+                AddMovieScreen()
+            }
+
+            composable(
+                route = Screen.EditMovie.route,
+                arguments = listOf(
+                    navArgument("movieId") {
+                        type = NavType.StringType
+                    }
+                )
+            ) {
+                EditMovieScreen()
             }
         }
     }
