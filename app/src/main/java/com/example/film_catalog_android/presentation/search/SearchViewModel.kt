@@ -3,9 +3,12 @@ package com.example.film_catalog_android.presentation.search
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.film_catalog_android.data.local.DatabaseProvider
 import com.example.film_catalog_android.data.repository.MockMovieRepository
+import com.example.film_catalog_android.data.repository.SearchHistoryRepositoryImpl
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
+import com.example.film_catalog_android.domain.repository.SearchHistoryRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +21,12 @@ class SearchViewModel(
 ) : ViewModel() {
 
     private val movieRepository: MovieRepository = MockMovieRepository()
+
+    private val searchHistoryRepository: SearchHistoryRepository =
+        SearchHistoryRepositoryImpl(
+            DatabaseProvider.getDatabase().searchHistoryDao()
+        )
+
     private val queryKey = "search_query"
 
     private var searchJob: Job? = null
@@ -28,6 +37,10 @@ class SearchViewModel(
         )
     )
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
+
+    init {
+        observeHistory()
+    }
 
     fun onQueryChange(query: String) {
         savedStateHandle[queryKey] = query
@@ -79,14 +92,14 @@ class SearchViewModel(
         }
     }
 
-    fun repeatSearch(query: String) {
-        onQueryChange(query)
+    fun repeatSearch(title: String) {
+        onQueryChange(title)
     }
 
     fun clearHistory() {
-        _uiState.value = _uiState.value.copy(
-            history = emptyList()
-        )
+        viewModelScope.launch {
+            searchHistoryRepository.clearHistory()
+        }
     }
 
     fun retryLastSearch() {
@@ -94,9 +107,22 @@ class SearchViewModel(
     }
 
     fun onResultClick(movie: Movie) {
-        _uiState.value = _uiState.value.copy(
-            history = addToHistory(movie.title)
-        )
+        viewModelScope.launch {
+            searchHistoryRepository.addToHistory(
+                movieId = movie.id,
+                title = movie.title
+            )
+        }
+    }
+
+    private fun observeHistory() {
+        viewModelScope.launch {
+            searchHistoryRepository.observeHistory().collect { history ->
+                _uiState.value = _uiState.value.copy(
+                    history = history
+                )
+            }
+        }
     }
 
     private suspend fun performSearch(query: String) {
@@ -121,13 +147,5 @@ class SearchViewModel(
                 errorMessage = "Не удалось загрузить данные"
             )
         }
-    }
-
-    private fun addToHistory(query: String): List<String> {
-        val currentHistory = _uiState.value.history
-
-        return listOf(query)
-            .plus(currentHistory.filterNot { it.equals(query, ignoreCase = true) })
-            .take(10)
     }
 }

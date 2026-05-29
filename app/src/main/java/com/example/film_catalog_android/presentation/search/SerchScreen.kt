@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.film_catalog_android.domain.model.SearchHistoryItem
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -124,9 +125,9 @@ fun SearchScreen(
             uiState.history.isNotEmpty() -> {
                 SearchHistoryBlock(
                     history = uiState.history,
-                    onHistoryClick = { query ->
+                    onHistoryClick = { item ->
                         keyboardController?.hide()
-                        viewModel.repeatSearch(query)
+                        viewModel.repeatSearch(item.title)
                     },
                     onClearHistoryClick = viewModel::clearHistory
                 )
@@ -208,8 +209,8 @@ private fun SearchEmptyState() {
 
 @Composable
 private fun SearchHistoryBlock(
-    history: List<String>,
-    onHistoryClick: (String) -> Unit,
+    history: List<SearchHistoryItem>,
+    onHistoryClick: (SearchHistoryItem) -> Unit,
     onClearHistoryClick: () -> Unit
 ) {
     Column(
@@ -226,10 +227,10 @@ private fun SearchHistoryBlock(
             Column(
                 modifier = Modifier.padding(vertical = 8.dp)
             ) {
-                history.forEach { query ->
+                history.forEach { item ->
                     TextButton(
                         onClick = {
-                            onHistoryClick(query)
+                            onHistoryClick(item)
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -241,7 +242,7 @@ private fun SearchHistoryBlock(
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
-                            text = query,
+                            text = item.title,
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(start = 12.dp),

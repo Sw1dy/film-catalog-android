@@ -87,7 +87,5 @@ object MovieStorage {
         _movies.value = _movies.value.filterNot { movie ->
             movie.id == movieId
         }
-
-        WatchListStorage.removeMovie(movieId)
     }
 }

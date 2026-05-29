@@ -3,13 +3,16 @@ package com.example.film_catalog_android.presentation.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.film_catalog_android.data.local.WatchListStorage
+import com.example.film_catalog_android.data.local.DatabaseProvider
 import com.example.film_catalog_android.data.repository.MockMovieRepository
+import com.example.film_catalog_android.data.repository.WatchListRepositoryImpl
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
+import com.example.film_catalog_android.domain.repository.WatchListRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class DetailsViewModel(
@@ -17,6 +20,12 @@ class DetailsViewModel(
 ) : ViewModel() {
 
     private val movieRepository: MovieRepository = MockMovieRepository()
+
+    private val watchListRepository: WatchListRepository =
+        WatchListRepositoryImpl(
+            watchListDao = DatabaseProvider.getDatabase().watchListDao(),
+            movieRepository = movieRepository
+        )
 
     private val _uiState = MutableStateFlow(DetailsUiState())
     val uiState: StateFlow<DetailsUiState> = _uiState.asStateFlow()
@@ -46,10 +55,13 @@ class DetailsViewModel(
 
             try {
                 val movie = movieRepository.getMovieById(movieId)
+                val watchListIds = watchListRepository.observeWatchListIds().first()
 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    movie = movie?.withWatchListState(),
+                    movie = movie?.copy(
+                        isInWatchlist = movie.id in watchListIds
+                    ),
                     errorMessage = if (movie == null) "Фильм не найден" else null
                 )
             } catch (exception: Exception) {
@@ -63,26 +75,23 @@ class DetailsViewModel(
 
     fun toggleWatchList() {
         val movie = _uiState.value.movie ?: return
-        WatchListStorage.toggleMovie(movie)
+
+        viewModelScope.launch {
+            watchListRepository.toggleMovie(movie)
+        }
     }
 
     private fun observeWatchList() {
         viewModelScope.launch {
-            WatchListStorage.movies.collect {
-                val currentMovie = _uiState.value.movie
+            watchListRepository.observeWatchListIds().collect { watchListIds ->
+                val movie = _uiState.value.movie ?: return@collect
 
-                if (currentMovie != null) {
-                    _uiState.value = _uiState.value.copy(
-                        movie = currentMovie.withWatchListState()
+                _uiState.value = _uiState.value.copy(
+                    movie = movie.copy(
+                        isInWatchlist = movie.id in watchListIds
                     )
-                }
+                )
             }
         }
-    }
-
-    private fun Movie.withWatchListState(): Movie {
-        return copy(
-            isInWatchlist = WatchListStorage.isMovieInWatchList(id)
-        )
     }
 }

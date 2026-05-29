@@ -2,26 +2,34 @@ package com.example.film_catalog_android.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.film_catalog_android.data.local.DatabaseProvider
 import com.example.film_catalog_android.data.local.UserSessionStorage
-import com.example.film_catalog_android.data.local.WatchListStorage
 import com.example.film_catalog_android.data.repository.MockMovieRepository
+import com.example.film_catalog_android.data.repository.WatchListRepositoryImpl
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
+import com.example.film_catalog_android.domain.repository.WatchListRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val movieRepository: MovieRepository = MockMovieRepository()
 ) : ViewModel() {
 
+    private val watchListRepository: WatchListRepository =
+        WatchListRepositoryImpl(
+            watchListDao = DatabaseProvider.getDatabase().watchListDao(),
+            movieRepository = movieRepository
+        )
+
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
         observeMovies()
-        observeWatchList()
         observeUserRole()
     }
 
@@ -30,7 +38,9 @@ class HomeViewModel(
     }
 
     fun toggleWatchList(movie: Movie) {
-        WatchListStorage.toggleMovie(movie)
+        viewModelScope.launch {
+            watchListRepository.toggleMovie(movie)
+        }
     }
 
     private fun observeMovies() {
@@ -41,10 +51,19 @@ class HomeViewModel(
             )
 
             try {
-                movieRepository.observeMovies().collect { movies ->
+                combine(
+                    movieRepository.observeMovies(),
+                    watchListRepository.observeWatchListIds()
+                ) { movies, watchListIds ->
+                    movies.map { movie ->
+                        movie.copy(
+                            isInWatchlist = movie.id in watchListIds
+                        )
+                    }
+                }.collect { movies ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        movies = movies.updateWatchListState(),
+                        movies = movies,
                         errorMessage = null
                     )
                 }
@@ -57,16 +76,6 @@ class HomeViewModel(
         }
     }
 
-    private fun observeWatchList() {
-        viewModelScope.launch {
-            WatchListStorage.movies.collect {
-                _uiState.value = _uiState.value.copy(
-                    movies = _uiState.value.movies.updateWatchListState()
-                )
-            }
-        }
-    }
-
     private fun observeUserRole() {
         viewModelScope.launch {
             UserSessionStorage.isAdmin.collect { isAdmin ->
@@ -74,14 +83,6 @@ class HomeViewModel(
                     isAdmin = isAdmin
                 )
             }
-        }
-    }
-
-    private fun List<Movie>.updateWatchListState(): List<Movie> {
-        return map { movie ->
-            movie.copy(
-                isInWatchlist = WatchListStorage.isMovieInWatchList(movie.id)
-            )
         }
     }
 }
