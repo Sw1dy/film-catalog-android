@@ -2,7 +2,8 @@ package com.example.film_catalog_android.presentation.admin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.film_catalog_android.data.repository.MockMovieRepository
+import com.example.film_catalog_android.data.repository.RemoteMovieRepository
+import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
 import kotlinx.coroutines.FlowPreview
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 class ManageMoviesViewModel(
-    private val movieRepository: MovieRepository = MockMovieRepository()
+    private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
 ) : ViewModel() {
 
     private var allMovies: List<Movie> = emptyList()
@@ -27,6 +28,25 @@ class ManageMoviesViewModel(
 
     init {
         observeMoviesWithDebounce()
+        loadMovies()
+    }
+
+    private fun loadMovies() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                errorMessage = null
+            )
+
+            try {
+                movieRepository.getMovies()
+            } catch (exception: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = "Не удалось загрузить фильмы"
+                )
+            }
+        }
     }
 
     fun onQueryChange(query: String) {

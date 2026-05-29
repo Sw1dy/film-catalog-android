@@ -3,7 +3,7 @@ package com.example.film_catalog_android.presentation.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.film_catalog_android.data.local.DatabaseProvider
-import com.example.film_catalog_android.data.repository.MockMovieRepository
+import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.data.repository.WatchListRepositoryImpl
 import com.example.film_catalog_android.domain.repository.MovieRepository
 import com.example.film_catalog_android.domain.repository.WatchListRepository
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModel : ViewModel() {
 
-    private val movieRepository: MovieRepository = MockMovieRepository()
+    private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
 
     private val watchListRepository: WatchListRepository =
         WatchListRepositoryImpl(

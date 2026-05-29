@@ -4,7 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.film_catalog_android.data.local.DatabaseProvider
-import com.example.film_catalog_android.data.repository.MockMovieRepository
+import com.example.film_catalog_android.data.repository.RemoteMovieRepository
+import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.data.repository.SearchHistoryRepositoryImpl
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
@@ -20,7 +21,7 @@ class SearchViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val movieRepository: MovieRepository = MockMovieRepository()
+    private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
 
     private val searchHistoryRepository: SearchHistoryRepository =
         SearchHistoryRepositoryImpl(

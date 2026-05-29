@@ -40,6 +40,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.film_catalog_android.core.ui.RatingBadge
 import com.example.film_catalog_android.domain.model.Movie
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun ManageMoviesScreen(
@@ -73,7 +74,8 @@ fun ManageMoviesScreen(
 
                 Text(
                     text = "Управление контентом",
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
@@ -229,26 +231,25 @@ private fun AdminMovieCard(
                     }
                 }
 
-                Column(
-                    horizontalAlignment = Alignment.End
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextButton(
-                        onClick = onEditClick
+                        onClick = onEditClick,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(text = "Изменить")
                     }
 
                     TextButton(
-                        onClick = onDeleteClick
+                        onClick = onDeleteClick,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Delete,
-                            contentDescription = null
+                        Text(
+                            text = "Удалить",
+                            color = Color(0xFF8C1D18)
                         )
-
-                        Spacer(modifier = Modifier.width(4.dp))
-
-                        Text(text = "Удалить")
                     }
                 }
             }

@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.film_catalog_android.data.local.DatabaseProvider
 import com.example.film_catalog_android.data.local.UserSessionStorage
-import com.example.film_catalog_android.data.repository.MockMovieRepository
+import com.example.film_catalog_android.data.repository.RemoteMovieRepository
+import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.data.repository.WatchListRepositoryImpl
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
@@ -16,7 +17,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val movieRepository: MovieRepository = MockMovieRepository()
+    private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
 ) : ViewModel() {
 
     private val watchListRepository: WatchListRepository =
@@ -31,10 +32,25 @@ class HomeViewModel(
     init {
         observeMovies()
         observeUserRole()
+        loadMovies()
     }
 
     fun loadMovies() {
-        observeMovies()
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                errorMessage = null
+            )
+
+            try {
+                movieRepository.getMovies()
+            } catch (exception: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = "Не удалось загрузить фильмы"
+                )
+            }
+        }
     }
 
     fun toggleWatchList(movie: Movie) {
@@ -45,32 +61,20 @@ class HomeViewModel(
 
     private fun observeMovies() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                isLoading = true,
-                errorMessage = null
-            )
-
-            try {
-                combine(
-                    movieRepository.observeMovies(),
-                    watchListRepository.observeWatchListIds()
-                ) { movies, watchListIds ->
-                    movies.map { movie ->
-                        movie.copy(
-                            isInWatchlist = movie.id in watchListIds
-                        )
-                    }
-                }.collect { movies ->
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        movies = movies,
-                        errorMessage = null
+            combine(
+                movieRepository.observeMovies(),
+                watchListRepository.observeWatchListIds()
+            ) { movies, watchListIds ->
+                movies.map { movie ->
+                    movie.copy(
+                        isInWatchlist = movie.id in watchListIds
                     )
                 }
-            } catch (exception: Exception) {
+            }.collect { movies ->
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    errorMessage = "Не удалось загрузить фильмы"
+                    movies = movies,
+                    errorMessage = null
                 )
             }
         }

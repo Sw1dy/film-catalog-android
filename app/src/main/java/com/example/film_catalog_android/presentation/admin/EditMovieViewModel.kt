@@ -3,7 +3,8 @@ package com.example.film_catalog_android.presentation.admin
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.film_catalog_android.data.repository.MockMovieRepository
+import com.example.film_catalog_android.data.repository.RemoteMovieRepository
+import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,7 @@ class EditMovieViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val movieRepository: MovieRepository = MockMovieRepository()
+    private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
 
     private val _uiState = MutableStateFlow(MovieFormUiState())
     val uiState: StateFlow<MovieFormUiState> = _uiState.asStateFlow()
