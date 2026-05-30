@@ -3,6 +3,7 @@ package com.example.film_catalog_android.presentation.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.film_catalog_android.data.local.DatabaseProvider
+import com.example.film_catalog_android.data.local.UserSessionStorage
 import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.data.repository.WatchListRepositoryImpl
 import com.example.film_catalog_android.domain.repository.MovieRepository
@@ -26,6 +27,7 @@ class ProfileViewModel : ViewModel() {
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
+        observeUser()
         observeWatchList()
     }
 
@@ -43,6 +45,20 @@ class ProfileViewModel : ViewModel() {
                         movie.copy(isInWatchlist = true)
                     }
                 )
+            }
+        }
+    }
+
+    private fun observeUser() {
+        viewModelScope.launch {
+            UserSessionStorage.firstName.collect { firstName ->
+                _uiState.value = _uiState.value.copy(firstName = firstName)
+            }
+        }
+
+        viewModelScope.launch {
+            UserSessionStorage.lastName.collect { lastName ->
+                _uiState.value = _uiState.value.copy(lastName = lastName)
             }
         }
     }

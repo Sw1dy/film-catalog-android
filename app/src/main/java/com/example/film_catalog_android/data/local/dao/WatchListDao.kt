@@ -10,18 +10,18 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface WatchListDao {
 
-    @Query("SELECT * FROM watchlist ORDER BY addedAt DESC")
-    fun observeWatchList(): Flow<List<WatchListEntity>>
+    @Query("SELECT movieId FROM watchlist WHERE userId = :userId")
+    fun observeWatchListIds(userId: Long): Flow<List<Long>>
 
-    @Query("SELECT EXISTS(SELECT 1 FROM watchlist WHERE movieId = :movieId)")
-    suspend fun isInWatchList(movieId: Long): Boolean
+    @Query("SELECT EXISTS(SELECT 1 FROM watchlist WHERE userId = :userId AND movieId = :movieId)")
+    suspend fun isMovieInWatchList(userId: Long, movieId: Long): Boolean
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(entity: WatchListEntity)
 
-    @Query("DELETE FROM watchlist WHERE movieId = :movieId")
-    suspend fun delete(movieId: Long)
+    @Query("DELETE FROM watchlist WHERE userId = :userId AND movieId = :movieId")
+    suspend fun delete(userId: Long, movieId: Long)
 
-    @Query("DELETE FROM watchlist")
-    suspend fun clear()
+    @Query("DELETE FROM watchlist WHERE userId = :userId")
+    suspend fun clearForUser(userId: Long)
 }

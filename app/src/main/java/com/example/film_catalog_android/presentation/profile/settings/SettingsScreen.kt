@@ -92,8 +92,7 @@ fun SettingsScreen(
 
         TextButton(
             onClick = {
-                viewModel.logout()
-                onLogoutClick()
+                viewModel.logout(onLogoutClick)
             }
         ) {
             Icon(

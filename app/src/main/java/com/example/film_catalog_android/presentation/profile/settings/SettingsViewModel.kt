@@ -3,6 +3,8 @@ package com.example.film_catalog_android.presentation.profile.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.film_catalog_android.data.local.ThemeStorage
+import com.example.film_catalog_android.data.local.UserSessionStorage
+import com.example.film_catalog_android.data.repository.RepositoryProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,14 +17,18 @@ class SettingsViewModel : ViewModel() {
 
     init {
         observeTheme()
+        observeEmail()
     }
 
     fun onThemeChanged(isDarkTheme: Boolean) {
         ThemeStorage.setDarkTheme(isDarkTheme)
     }
 
-    fun logout() {
-        // Позже подключим выход из Firebase auth
+    fun logout(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            RepositoryProvider.authRepository.logout()
+            onSuccess()
+        }
     }
 
     private fun observeTheme() {
@@ -30,6 +36,16 @@ class SettingsViewModel : ViewModel() {
             ThemeStorage.isDarkTheme.collect { isDark ->
                 _uiState.value = _uiState.value.copy(
                     isDarkTheme = isDark
+                )
+            }
+        }
+    }
+
+    private fun observeEmail() {
+        viewModelScope.launch {
+            UserSessionStorage.email.collect { email ->
+                _uiState.value = _uiState.value.copy(
+                    email = email
                 )
             }
         }

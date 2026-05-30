@@ -10,25 +10,27 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface SearchHistoryDao {
 
-    @Query("SELECT * FROM search_history ORDER BY createdAt DESC LIMIT 10")
-    fun observeHistory(): Flow<List<SearchHistoryEntity>>
+    @Query("SELECT * FROM search_history WHERE userId = :userId ORDER BY createdAt DESC LIMIT 10")
+    fun observeHistory(userId: Long): Flow<List<SearchHistoryEntity>>
 
-    @Query("DELETE FROM search_history WHERE movieId = :movieId")
-    suspend fun deleteByMovieId(movieId: Long)
+    @Query("DELETE FROM search_history WHERE userId = :userId AND movieId = :movieId")
+    suspend fun deleteByMovieId(userId: Long, movieId: Long)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(entity: SearchHistoryEntity)
 
     @Query("""
         DELETE FROM search_history 
-        WHERE id NOT IN (
+        WHERE userId = :userId
+        AND id NOT IN (
             SELECT id FROM search_history 
+            WHERE userId = :userId
             ORDER BY createdAt DESC 
             LIMIT 10
         )
     """)
-    suspend fun deleteOldItems()
+    suspend fun deleteOldItems(userId: Long)
 
-    @Query("DELETE FROM search_history")
-    suspend fun clearHistory()
+    @Query("DELETE FROM search_history WHERE userId = :userId")
+    suspend fun clearHistory(userId: Long)
 }

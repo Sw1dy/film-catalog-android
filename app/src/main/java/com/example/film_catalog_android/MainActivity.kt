@@ -9,11 +9,13 @@ import com.example.film_catalog_android.core.navigation.AppNavigation
 import com.example.film_catalog_android.data.local.DatabaseProvider
 import com.example.film_catalog_android.ui.theme.FilmcatalogandroidTheme
 import com.example.film_catalog_android.data.local.ThemeStorage
+import com.example.film_catalog_android.data.local.UserSessionStorage
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        UserSessionStorage.init(applicationContext)
         ThemeStorage.init(applicationContext)
         DatabaseProvider.init(applicationContext)
 

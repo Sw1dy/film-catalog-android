@@ -1,11 +1,16 @@
 package com.example.film_catalog_android.data.repository
 
+import com.example.film_catalog_android.data.local.UserSessionStorage
 import com.example.film_catalog_android.data.local.dao.WatchListDao
 import com.example.film_catalog_android.data.local.entity.WatchListEntity
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
 import com.example.film_catalog_android.domain.repository.WatchListRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 class WatchListRepositoryImpl(
@@ -13,38 +18,49 @@ class WatchListRepositoryImpl(
     private val movieRepository: MovieRepository
 ) : WatchListRepository {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun observeWatchList(): Flow<List<Movie>> {
-        return watchListDao.observeWatchList().map { entities ->
-            entities.mapNotNull { entity ->
-                movieRepository.getMovieById(entity.movieId)
+        return observeWatchListIds().map { movieIds ->
+            movieIds.mapNotNull { movieId ->
+                movieRepository.getMovieById(movieId)
             }
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun observeWatchListIds(): Flow<Set<Long>> {
-        return watchListDao.observeWatchList().map { entities ->
-            entities.map { entity ->
-                entity.movieId
-            }.toSet()
+        return UserSessionStorage.userId.flatMapLatest { userId ->
+            if (userId == null) {
+                flowOf(emptySet())
+            } else {
+                watchListDao.observeWatchListIds(userId).map { movieIds ->
+                    movieIds.toSet()
+                }
+            }
         }
     }
 
     override suspend fun toggleMovie(movie: Movie) {
-        val isInWatchList = watchListDao.isInWatchList(movie.id)
+        val userId = UserSessionStorage.userId.first() ?: return
+        val isInWatchList = watchListDao.isMovieInWatchList(
+            userId = userId,
+            movieId = movie.id
+        )
 
         if (isInWatchList) {
-            watchListDao.delete(movie.id)
+            watchListDao.delete(userId, movie.id)
         } else {
             watchListDao.insert(
                 WatchListEntity(
-                    movieId = movie.id,
-                    addedAt = System.currentTimeMillis()
+                    userId = userId,
+                    movieId = movie.id
                 )
             )
         }
     }
 
     override suspend fun removeMovie(movieId: Long) {
-        watchListDao.delete(movieId)
+        val userId = UserSessionStorage.userId.first() ?: return
+        watchListDao.delete(userId, movieId)
     }
 }

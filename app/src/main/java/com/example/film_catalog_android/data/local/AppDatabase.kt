@@ -12,7 +12,7 @@ import com.example.film_catalog_android.data.local.entity.WatchListEntity
         SearchHistoryEntity::class,
         WatchListEntity::class
     ],
-    version = 2,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

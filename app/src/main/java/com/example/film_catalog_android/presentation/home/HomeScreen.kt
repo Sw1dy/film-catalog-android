@@ -139,8 +139,8 @@ private fun LandscapeHomeContent(
             .padding(
                 start = 32.dp,
                 end = 32.dp,
-                top = 24.dp,
-                bottom = 96.dp
+                top = 16.dp,
+                bottom = 0.dp
             )
     ) {
         Column(
@@ -205,10 +205,10 @@ private fun LandscapeHomeContent(
         LazyColumn(
             modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(
-                top = 8.dp,
-                bottom = 24.dp
+                top = 0.dp,
+                bottom = 0.dp
             ),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(uiState.movies) { movie ->
                 LandscapeMovieCard(

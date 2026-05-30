@@ -2,13 +2,16 @@ package com.example.film_catalog_android.presentation.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import com.example.film_catalog_android.data.repository.AuthRepository
+import com.example.film_catalog_android.data.repository.RepositoryProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AuthViewModel : ViewModel() {
+class AuthViewModel(
+    private val authRepository: AuthRepository = RepositoryProvider.authRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
@@ -59,12 +62,24 @@ class AuthViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                errorMessage = null
+            )
 
-            delay(500)
-
-            _uiState.value = _uiState.value.copy(isLoading = false)
-            onSuccess()
+            try {
+                authRepository.login(
+                    email = state.email,
+                    password = state.password
+                )
+                _uiState.value = _uiState.value.copy(isLoading = false)
+                onSuccess()
+            } catch (exception: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = "Не удалось войти. Проверьте данные"
+                )
+            }
         }
     }
 
@@ -100,12 +115,26 @@ class AuthViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                errorMessage = null
+            )
 
-            delay(500)
-
-            _uiState.value = _uiState.value.copy(isLoading = false)
-            onSuccess()
+            try {
+                authRepository.register(
+                    firstName = state.firstName,
+                    lastName = state.lastName,
+                    email = state.email,
+                    password = state.password
+                )
+                _uiState.value = _uiState.value.copy(isLoading = false)
+                onSuccess()
+            } catch (exception: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = "Не удалось зарегистрироваться"
+                )
+            }
         }
     }
 

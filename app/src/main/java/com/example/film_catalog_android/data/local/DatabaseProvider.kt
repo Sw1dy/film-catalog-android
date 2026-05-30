@@ -14,7 +14,7 @@ object DatabaseProvider {
                 AppDatabase::class.java,
                 "film_catalog_database"
             )
-                .fallbackToDestructiveMigration(false)
+                .fallbackToDestructiveMigration()
                 .build()
         }
     }

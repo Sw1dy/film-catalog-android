@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.film_catalog_android.core.ui.LandscapeMovieCard
 import com.example.film_catalog_android.core.ui.MovieCard
 
 @Composable
@@ -71,7 +72,12 @@ private fun ProfilePortraitContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .padding(
+                start = 24.dp,
+                end = 24.dp,
+                top = 16.dp,
+                bottom = 0.dp
+            )
     ) {
         ProfileHeader(
             firstName = uiState.firstName,
@@ -91,7 +97,8 @@ private fun ProfilePortraitContent(
         WatchListContent(
             uiState = uiState,
             onMovieClick = onMovieClick,
-            onRemoveFromWatchList = onRemoveFromWatchList
+            onRemoveFromWatchList = onRemoveFromWatchList,
+            isLandscape = false
         )
     }
 }
@@ -106,13 +113,18 @@ private fun ProfileLandscapeContent(
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 8.dp),
+            .padding(
+                start = 32.dp,
+                end = 32.dp,
+                top = 16.dp,
+                bottom = 0.dp
+            ),
         horizontalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .weight(0.8f),
+                .width(360.dp),
             verticalArrangement = Arrangement.Top
         ) {
             ProfileHeader(
@@ -125,7 +137,7 @@ private fun ProfileLandscapeContent(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .weight(1.7f)
+                .weight(1f)
         ) {
             Text(
                 text = "Буду смотреть",
@@ -137,7 +149,8 @@ private fun ProfileLandscapeContent(
             WatchListContent(
                 uiState = uiState,
                 onMovieClick = onMovieClick,
-                onRemoveFromWatchList = onRemoveFromWatchList
+                onRemoveFromWatchList = onRemoveFromWatchList,
+                isLandscape = true
             )
         }
     }
@@ -189,7 +202,8 @@ private fun ProfileHeader(
 private fun WatchListContent(
     uiState: ProfileUiState,
     onMovieClick: (Long) -> Unit,
-    onRemoveFromWatchList: (Long) -> Unit
+    onRemoveFromWatchList: (Long) -> Unit,
+    isLandscape: Boolean
 ) {
     if (uiState.watchList.isEmpty()) {
         Text(
@@ -200,23 +214,37 @@ private fun WatchListContent(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                start = 16.dp,
-                end = 16.dp,
-                top = 12.dp,
-                bottom = 96.dp
+                start = 0.dp,
+                end = 0.dp,
+                top = if (isLandscape) 0.dp else 8.dp,
+                bottom = if (isLandscape) 0.dp else 16.dp
             ),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(
+                if (isLandscape) 12.dp else 16.dp
+            )
         ) {
             items(uiState.watchList) { movie ->
-                MovieCard(
-                    movie = movie,
-                    onClick = {
-                        onMovieClick(movie.id)
-                    },
-                    onFavoriteClick = {
-                        onRemoveFromWatchList(movie.id)
-                    }
-                )
+                if (isLandscape) {
+                    LandscapeMovieCard(
+                        movie = movie,
+                        onClick = {
+                            onMovieClick(movie.id)
+                        },
+                        onFavoriteClick = {
+                            onRemoveFromWatchList(movie.id)
+                        }
+                    )
+                } else {
+                    MovieCard(
+                        movie = movie,
+                        onClick = {
+                            onMovieClick(movie.id)
+                        },
+                        onFavoriteClick = {
+                            onRemoveFromWatchList(movie.id)
+                        }
+                    )
+                }
             }
         }
     }

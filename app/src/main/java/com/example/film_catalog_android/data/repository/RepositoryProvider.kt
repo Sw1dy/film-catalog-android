@@ -7,4 +7,8 @@ object RepositoryProvider {
     val movieRepository: MovieRepository by lazy {
         RemoteMovieRepository()
     }
+
+    val authRepository: AuthRepository by lazy {
+        AuthRepository()
+    }
 }

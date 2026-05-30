@@ -1,11 +1,12 @@
 package com.example.film_catalog_android.data.local.entity
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-@Entity(tableName = "watchlist")
+@Entity(
+    tableName = "watchlist",
+    primaryKeys = ["userId", "movieId"]
+)
 data class WatchListEntity(
-    @PrimaryKey
-    val movieId: Long,
-    val addedAt: Long
+    val userId: Long,
+    val movieId: Long
 )
