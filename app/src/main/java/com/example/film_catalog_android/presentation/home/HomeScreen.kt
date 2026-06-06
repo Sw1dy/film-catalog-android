@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -92,65 +93,65 @@ private fun PortraitHomeContent(
     onClearFilters: () -> Unit,
     onReloadFilters: () -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(
-            start = 24.dp,
-            end = 24.dp,
-            top = 32.dp,
-            bottom = 120.dp
-        ),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item {
-            HomeHeader(
-                isAdmin = uiState.isAdmin,
-                onAddMovieClick = onAddMovieClick,
-                onManageMoviesClick = onManageMoviesClick
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(
+                start = 24.dp,
+                end = 24.dp,
+                top = 16.dp
             )
-        }
+    ) {
+        HomeHeader(
+            isAdmin = uiState.isAdmin,
+            onAddMovieClick = onAddMovieClick,
+            onManageMoviesClick = onManageMoviesClick
+        )
 
         if (uiState.availableGenres.isNotEmpty() || uiState.availableYears.isNotEmpty()) {
-            item {
-                MovieFiltersPanel(
-                    selectedGenre = uiState.selectedGenre,
-                    selectedYear = uiState.selectedYear,
-                    availableGenres = uiState.availableGenres,
-                    availableYears = uiState.availableYears,
-                    filterErrorMessage = uiState.filterErrorMessage,
-                    onGenreSelected = onGenreSelected,
-                    onYearSelected = onYearSelected,
-                    onClearFilters = onClearFilters,
-                    onReloadFilters = onReloadFilters
-                )
-            }
-        }
-
-        if (uiState.isLoading) {
-            item {
-                LoadingBlock()
-            }
-        }
-
-        if (uiState.errorMessage != null) {
-            item {
-                ErrorBlock(
-                    message = uiState.errorMessage,
-                    onRetryClick = onRetryClick
-                )
-            }
-        }
-
-        items(uiState.movies) { movie ->
-            MovieCard(
-                movie = movie,
-                onClick = {
-                    onMovieClick(movie.id)
-                },
-                onFavoriteClick = {
-                    onFavoriteClick(movie)
-                }
+            MovieFiltersPanel(
+                selectedGenre = uiState.selectedGenre,
+                selectedYear = uiState.selectedYear,
+                availableGenres = uiState.availableGenres,
+                availableYears = uiState.availableYears,
+                filterErrorMessage = uiState.filterErrorMessage,
+                onGenreSelected = onGenreSelected,
+                onYearSelected = onYearSelected,
+                onClearFilters = onClearFilters,
+                onReloadFilters = onReloadFilters
             )
+        }
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            if (uiState.isLoading) {
+                item {
+                    LoadingBlock()
+                }
+            }
+
+            if (uiState.errorMessage != null) {
+                item {
+                    ErrorBlock(
+                        message = uiState.errorMessage,
+                        onRetryClick = onRetryClick
+                    )
+                }
+            }
+
+            items(uiState.movies) { movie ->
+                MovieCard(
+                    movie = movie,
+                    onClick = {
+                        onMovieClick(movie.id)
+                    },
+                    onFavoriteClick = {
+                        onFavoriteClick(movie)
+                    }
+                )
+            }
         }
     }
 }
@@ -172,46 +173,22 @@ private fun LandscapeHomeContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                start = 32.dp,
-                end = 32.dp,
-                top = 16.dp,
-                bottom = 0.dp
+                start = 24.dp,
+                end = 24.dp,
+                top = 16.dp
             )
     ) {
         Column(
             modifier = Modifier
                 .width(360.dp)
+                .fillMaxHeight()
                 .padding(end = 24.dp)
         ) {
-            Text(
-                text = "Советуем посмотреть",
-                style = MaterialTheme.typography.titleLarge
+            HomeHeader(
+                isAdmin = uiState.isAdmin,
+                onAddMovieClick = onAddMovieClick,
+                onManageMoviesClick = onManageMoviesClick
             )
-
-            if (uiState.isAdmin) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = onAddMovieClick
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AddCircleOutline,
-                            contentDescription = "Добавить фильм"
-                        )
-                    }
-
-                    IconButton(
-                        onClick = onManageMoviesClick
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Управление фильмами"
-                        )
-                    }
-                }
-            }
 
             if (uiState.availableGenres.isNotEmpty() || uiState.availableYears.isNotEmpty()) {
                 MovieFiltersPanel(
@@ -225,10 +202,6 @@ private fun LandscapeHomeContent(
                     onClearFilters = onClearFilters,
                     onReloadFilters = onReloadFilters
                 )
-            }
-
-            if (uiState.isLoading) {
-                CircularProgressIndicator()
             }
 
             if (uiState.isLoading) {
@@ -256,10 +229,6 @@ private fun LandscapeHomeContent(
 
         LazyColumn(
             modifier = Modifier.weight(1f),
-            contentPadding = PaddingValues(
-                top = 0.dp,
-                bottom = 0.dp
-            ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(uiState.movies) { movie ->

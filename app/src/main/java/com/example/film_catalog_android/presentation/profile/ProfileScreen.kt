@@ -85,8 +85,7 @@ private fun ProfilePortraitContent(
             .padding(
                 start = 24.dp,
                 end = 24.dp,
-                top = 16.dp,
-                bottom = 0.dp
+                top = 16.dp
             )
     ) {
         ProfileHeader(
@@ -137,17 +136,16 @@ private fun ProfileLandscapeContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                start = 32.dp,
-                end = 32.dp,
+                start = 24.dp,
+                end = 24.dp,
                 top = 16.dp,
-                bottom = 0.dp
-            ),
-        horizontalArrangement = Arrangement.spacedBy(24.dp)
+            )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .width(360.dp),
+                .width(360.dp)
+                .padding(end = 24.dp),
             verticalArrangement = Arrangement.Top
         ) {
             ProfileHeader(
@@ -168,6 +166,7 @@ private fun ProfileLandscapeContent(
                 )
             }
         }
+
 
         Column(
             modifier = Modifier
@@ -246,15 +245,7 @@ private fun WatchListContent(
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                start = 0.dp,
-                end = 0.dp,
-                top = if (isLandscape) 0.dp else 8.dp,
-                bottom = if (isLandscape) 0.dp else 16.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(
-                if (isLandscape) 12.dp else 16.dp
-            )
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(uiState.watchList) { movie ->
                 if (isLandscape) {
