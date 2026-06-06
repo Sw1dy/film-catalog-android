@@ -1,4 +1,4 @@
-package com.example.film_catalog_android.core.ui
+package com.example.film_catalog_android.core.ui.form
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape

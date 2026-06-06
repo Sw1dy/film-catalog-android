@@ -17,7 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.film_catalog_android.core.ui.BottomNavigationBar
+import com.example.film_catalog_android.core.ui.navigation.BottomNavigationBar
 import com.example.film_catalog_android.presentation.details.DetailsScreen
 import com.example.film_catalog_android.presentation.home.HomeScreen
 import com.example.film_catalog_android.presentation.profile.ProfileScreen

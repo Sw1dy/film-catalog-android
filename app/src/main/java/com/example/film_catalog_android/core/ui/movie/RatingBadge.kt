@@ -1,8 +1,5 @@
-package com.example.film_catalog_android.core.ui
+package com.example.film_catalog_android.core.ui.movie
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme

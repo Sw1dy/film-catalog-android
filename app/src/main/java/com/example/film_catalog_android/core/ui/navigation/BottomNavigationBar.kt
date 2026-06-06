@@ -1,4 +1,4 @@
-package com.example.film_catalog_android.core.ui
+package com.example.film_catalog_android.core.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home

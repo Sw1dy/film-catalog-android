@@ -1,8 +1,7 @@
-package com.example.film_catalog_android.core.ui
+package com.example.film_catalog_android.core.ui.auth
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

@@ -1,6 +1,5 @@
 package com.example.film_catalog_android.presentation.admin
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,11 +35,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.film_catalog_android.core.ui.RatingBadge
+import com.example.film_catalog_android.core.ui.movie.RatingBadge
 import com.example.film_catalog_android.domain.model.Movie
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.graphics.Color
-import com.example.film_catalog_android.core.ui.MovieImage
+import com.example.film_catalog_android.core.ui.movie.MovieImage
 
 @Composable
 fun ManageMoviesScreen(

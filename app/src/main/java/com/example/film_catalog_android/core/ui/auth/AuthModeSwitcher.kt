@@ -1,4 +1,4 @@
-package com.example.film_catalog_android.core.ui
+package com.example.film_catalog_android.core.ui.auth
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable

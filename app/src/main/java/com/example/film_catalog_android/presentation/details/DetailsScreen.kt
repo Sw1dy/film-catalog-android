@@ -1,6 +1,5 @@
 package com.example.film_catalog_android.presentation.details
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,10 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.layout.PaddingValues
-import com.example.film_catalog_android.core.ui.RatingBadge
+import com.example.film_catalog_android.core.ui.movie.RatingBadge
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
-import com.example.film_catalog_android.core.ui.MovieImage
+import com.example.film_catalog_android.core.ui.movie.MovieImage
 
 @Composable
 fun DetailsScreen(

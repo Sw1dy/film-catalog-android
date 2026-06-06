@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.film_catalog_android.core.ui.AuthModeSwitcher
-import com.example.film_catalog_android.core.ui.AuthTextField
+import com.example.film_catalog_android.core.ui.auth.AuthModeSwitcher
+import com.example.film_catalog_android.core.ui.auth.AuthTextField
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 

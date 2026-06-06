@@ -28,8 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.film_catalog_android.core.ui.LandscapeMovieCard
-import com.example.film_catalog_android.core.ui.MovieCard
+import com.example.film_catalog_android.core.ui.movie.LandscapeMovieCard
+import com.example.film_catalog_android.core.ui.movie.MovieCard
 import com.example.film_catalog_android.domain.model.Movie
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
