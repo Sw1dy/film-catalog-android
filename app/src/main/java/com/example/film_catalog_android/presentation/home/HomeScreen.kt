@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -108,18 +110,20 @@ private fun PortraitHomeContent(
             )
         }
 
-        item {
-            MovieFiltersPanel(
-                selectedGenre = uiState.selectedGenre,
-                selectedYear = uiState.selectedYear,
-                availableGenres = uiState.availableGenres,
-                availableYears = uiState.availableYears,
-                filterErrorMessage = uiState.filterErrorMessage,
-                onGenreSelected = onGenreSelected,
-                onYearSelected = onYearSelected,
-                onClearFilters = onClearFilters,
-                onReloadFilters = onReloadFilters
-            )
+        if (uiState.availableGenres.isNotEmpty() || uiState.availableYears.isNotEmpty()) {
+            item {
+                MovieFiltersPanel(
+                    selectedGenre = uiState.selectedGenre,
+                    selectedYear = uiState.selectedYear,
+                    availableGenres = uiState.availableGenres,
+                    availableYears = uiState.availableYears,
+                    filterErrorMessage = uiState.filterErrorMessage,
+                    onGenreSelected = onGenreSelected,
+                    onYearSelected = onYearSelected,
+                    onClearFilters = onClearFilters,
+                    onReloadFilters = onReloadFilters
+                )
+            }
         }
 
         if (uiState.isLoading) {
@@ -177,8 +181,7 @@ private fun LandscapeHomeContent(
         Column(
             modifier = Modifier
                 .width(360.dp)
-                .padding(end = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(end = 24.dp)
         ) {
             Text(
                 text = "Советуем посмотреть",
@@ -210,17 +213,19 @@ private fun LandscapeHomeContent(
                 }
             }
 
-            MovieFiltersPanel(
-                selectedGenre = uiState.selectedGenre,
-                selectedYear = uiState.selectedYear,
-                availableGenres = uiState.availableGenres,
-                availableYears = uiState.availableYears,
-                filterErrorMessage = uiState.filterErrorMessage,
-                onGenreSelected = onGenreSelected,
-                onYearSelected = onYearSelected,
-                onClearFilters = onClearFilters,
-                onReloadFilters = onReloadFilters
-            )
+            if (uiState.availableGenres.isNotEmpty() || uiState.availableYears.isNotEmpty()) {
+                MovieFiltersPanel(
+                    selectedGenre = uiState.selectedGenre,
+                    selectedYear = uiState.selectedYear,
+                    availableGenres = uiState.availableGenres,
+                    availableYears = uiState.availableYears,
+                    filterErrorMessage = uiState.filterErrorMessage,
+                    onGenreSelected = onGenreSelected,
+                    onYearSelected = onYearSelected,
+                    onClearFilters = onClearFilters,
+                    onReloadFilters = onReloadFilters
+                )
+            }
 
             if (uiState.isLoading) {
                 CircularProgressIndicator()
