@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.film_catalog_android.data.local.DatabaseProvider
 import com.example.film_catalog_android.data.local.UserSessionStorage
-import com.example.film_catalog_android.data.repository.RemoteMovieRepository
 import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.data.repository.WatchListRepositoryImpl
 import com.example.film_catalog_android.domain.model.Movie

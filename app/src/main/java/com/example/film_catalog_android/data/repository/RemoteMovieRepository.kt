@@ -20,14 +20,27 @@ class RemoteMovieRepository(
         return moviesFlow.asStateFlow()
     }
 
-    override suspend fun getMovies(): List<Movie> {
-        val movies = movieApi.getMovies().map { dto ->
+    override suspend fun getMovies(
+        genre: String?,
+        year: Int?
+    ): List<Movie> {
+        val movies = movieApi.getMovies(
+            genre = genre,
+            year = year
+        ).map { dto ->
             dto.toDomain()
         }
 
         moviesFlow.value = movies
-
         return movies
+    }
+
+    override suspend fun getGenres(): List<String> {
+        return movieApi.getGenres()
+    }
+
+    override suspend fun getYears(): List<Int> {
+        return movieApi.getYears()
     }
 
     override suspend fun searchMovies(query: String): List<Movie> {

@@ -33,12 +33,41 @@ class MovieApi {
         }
     }
 
-    suspend fun getMovies(): List<MovieDto> {
+    suspend fun getMovies(
+        genre: String? = null,
+        year: Int? = null
+    ): List<MovieDto> {
         return client
-            .get("${NetworkConfig.BASE_URL}/movies")
+            .get("${NetworkConfig.BASE_URL}/movies") {
+                url {
+                    if (!genre.isNullOrBlank()) {
+                        parameters.append("genre", genre)
+                    }
+
+                    if (year != null) {
+                        parameters.append("year", year.toString())
+                    }
+                }
+            }
             .body()
     }
 
+    suspend fun getGenres(): List<String> {
+        return client
+            .get("${NetworkConfig.BASE_URL}/movies/genres")
+            .body<List<String>>()
+            .filter { it.isNotBlank() }
+            .distinct()
+            .sorted()
+    }
+
+    suspend fun getYears(): List<Int> {
+        return client
+            .get("${NetworkConfig.BASE_URL}/movies/years")
+            .body<List<Int>>()
+            .distinct()
+            .sortedDescending()
+    }
     suspend fun getMovieById(id: Long): MovieDto {
         return client
             .get("${NetworkConfig.BASE_URL}/movies/$id")

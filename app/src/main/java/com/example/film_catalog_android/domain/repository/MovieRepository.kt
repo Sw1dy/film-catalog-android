@@ -7,7 +7,14 @@ interface MovieRepository {
 
     fun observeMovies(): Flow<List<Movie>>
 
-    suspend fun getMovies(): List<Movie>
+    suspend fun getMovies(
+        genre: String? = null,
+        year: Int? = null
+    ): List<Movie>
+
+    suspend fun getGenres(): List<String>
+
+    suspend fun getYears(): List<Int>
 
     suspend fun searchMovies(query: String): List<Movie>
 
