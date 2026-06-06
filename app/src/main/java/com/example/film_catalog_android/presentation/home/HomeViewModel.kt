@@ -32,17 +32,23 @@ class HomeViewModel(
         observeMovies()
         observeUserRole()
         loadMovies()
+        loadFilterOptions()
     }
 
     fun loadMovies() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
+            val currentState = _uiState.value
+
+            _uiState.value = currentState.copy(
                 isLoading = true,
                 errorMessage = null
             )
 
             try {
-                movieRepository.getMovies()
+                movieRepository.getMovies(
+                    genre = currentState.selectedGenre,
+                    year = currentState.selectedYear
+                )
             } catch (exception: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -50,6 +56,54 @@ class HomeViewModel(
                 )
             }
         }
+    }
+
+    fun loadFilterOptions() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                isFiltersLoading = true,
+                filterErrorMessage = null
+            )
+
+            try {
+                val genres = movieRepository.getGenres()
+                val years = movieRepository.getYears()
+
+                _uiState.value = _uiState.value.copy(
+                    availableGenres = genres,
+                    availableYears = years,
+                    isFiltersLoading = false,
+                    filterErrorMessage = null
+                )
+            } catch (exception: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isFiltersLoading = false,
+                    filterErrorMessage = "Не удалось загрузить фильтры"
+                )
+            }
+        }
+    }
+
+    fun selectGenre(genre: String?) {
+        _uiState.value = _uiState.value.copy(
+            selectedGenre = genre
+        )
+        loadMovies()
+    }
+
+    fun selectYear(year: Int?) {
+        _uiState.value = _uiState.value.copy(
+            selectedYear = year
+        )
+        loadMovies()
+    }
+
+    fun clearFilters() {
+        _uiState.value = _uiState.value.copy(
+            selectedGenre = null,
+            selectedYear = null
+        )
+        loadMovies()
     }
 
     fun toggleWatchList(movie: Movie) {
