@@ -2,10 +2,11 @@ package com.example.film_catalog_android.presentation.admin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.film_catalog_android.data.repository.RemoteMovieRepository
 import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
+import com.example.film_catalog_android.domain.usecase.movie.DeleteMovieUseCase
+import com.example.film_catalog_android.domain.usecase.movie.GetMoviesUseCase
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +19,9 @@ import kotlinx.coroutines.launch
 class ManageMoviesViewModel(
     private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
 ) : ViewModel() {
+
+    private val getMoviesUseCase = GetMoviesUseCase(movieRepository)
+    private val deleteMovieUseCase = DeleteMovieUseCase(movieRepository)
 
     private var allMovies: List<Movie> = emptyList()
 
@@ -39,7 +43,7 @@ class ManageMoviesViewModel(
             )
 
             try {
-                movieRepository.getMovies()
+                getMoviesUseCase()
             } catch (exception: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -73,7 +77,7 @@ class ManageMoviesViewModel(
     fun deleteMovie(movieId: Long) {
         viewModelScope.launch {
             try {
-                movieRepository.deleteMovie(movieId)
+                deleteMovieUseCase(movieId)
             } catch (exception: Exception) {
                 _uiState.value = _uiState.value.copy(
                     errorMessage = "Не удалось удалить фильм"

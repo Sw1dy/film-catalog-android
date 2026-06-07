@@ -3,10 +3,11 @@ package com.example.film_catalog_android.presentation.admin
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.film_catalog_android.data.repository.RemoteMovieRepository
 import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
+import com.example.film_catalog_android.domain.usecase.movie.GetMovieByIdUseCase
+import com.example.film_catalog_android.domain.usecase.movie.UpdateMovieUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +18,8 @@ class EditMovieViewModel(
 ) : ViewModel() {
 
     private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
+    private val getMovieByIdUseCase = GetMovieByIdUseCase(movieRepository)
+    private val updateMovieUseCase = UpdateMovieUseCase(movieRepository)
 
     private val _uiState = MutableStateFlow(MovieFormUiState())
     val uiState: StateFlow<MovieFormUiState> = _uiState.asStateFlow()
@@ -117,7 +120,7 @@ class EditMovieViewModel(
             _uiState.value = _uiState.value.copy(isLoading = true)
 
             try {
-                movieRepository.updateMovie(movie)
+                updateMovieUseCase(movie)
 
                 _uiState.value = _uiState.value.copy(isLoading = false)
                 onSuccess()
@@ -138,7 +141,7 @@ class EditMovieViewModel(
             )
 
             try {
-                val movie = movieRepository.getMovieById(movieId)
+                val movie = getMovieByIdUseCase(movieId)
 
                 if (movie == null) {
                     _uiState.value = _uiState.value.copy(
