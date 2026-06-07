@@ -2,16 +2,18 @@ package com.example.film_catalog_android.presentation.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.film_catalog_android.data.repository.AuthRepository
 import com.example.film_catalog_android.data.repository.RepositoryProvider
+import com.example.film_catalog_android.domain.usecase.auth.LoginUseCase
+import com.example.film_catalog_android.domain.usecase.auth.RegisterUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AuthViewModel(
-    private val authRepository: AuthRepository = RepositoryProvider.authRepository
-) : ViewModel() {
+class AuthViewModel : ViewModel() {
+
+    private val loginUseCase = LoginUseCase(RepositoryProvider.authRepository)
+    private val registerUseCase = RegisterUseCase(RepositoryProvider.authRepository)
 
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
@@ -68,7 +70,7 @@ class AuthViewModel(
             )
 
             try {
-                authRepository.login(
+                loginUseCase(
                     email = state.email,
                     password = state.password
                 )
@@ -121,7 +123,7 @@ class AuthViewModel(
             )
 
             try {
-                authRepository.register(
+                registerUseCase(
                     firstName = state.firstName,
                     lastName = state.lastName,
                     email = state.email,

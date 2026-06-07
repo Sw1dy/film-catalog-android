@@ -4,15 +4,16 @@ import com.example.film_catalog_android.data.local.UserSessionStorage
 import com.example.film_catalog_android.data.remote.AuthApi
 import com.example.film_catalog_android.data.remote.dto.LoginRequest
 import com.example.film_catalog_android.data.remote.dto.RegisterRequest
+import com.example.film_catalog_android.domain.repository.AuthRepository
 
-class AuthRepository(
+class AuthRepositoryImpl(
     private val authApi: AuthApi = AuthApi()
-) {
+) : AuthRepository {
 
-    suspend fun login(email: String, password: String) {
+    override suspend fun login(email: String, password: String) {
         val response = authApi.login(
             LoginRequest(
-                email = email.trim(),
+                email = email,
                 password = password
             )
         )
@@ -27,7 +28,7 @@ class AuthRepository(
         )
     }
 
-    suspend fun register(
+    override suspend fun register(
         firstName: String,
         lastName: String,
         email: String,
@@ -35,9 +36,9 @@ class AuthRepository(
     ) {
         val response = authApi.register(
             RegisterRequest(
-                firstName = firstName.trim(),
-                lastName = lastName.trim(),
-                email = email.trim(),
+                firstName = firstName,
+                lastName = lastName,
+                email = email,
                 password = password
             )
         )
@@ -52,7 +53,7 @@ class AuthRepository(
         )
     }
 
-    suspend fun logout() {
+    override suspend fun logout() {
         UserSessionStorage.clearSession()
     }
 }
