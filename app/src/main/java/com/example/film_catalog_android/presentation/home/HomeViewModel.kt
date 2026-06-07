@@ -7,6 +7,8 @@ import com.example.film_catalog_android.data.local.UserSessionStorage
 import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.data.repository.WatchListRepositoryImpl
 import com.example.film_catalog_android.domain.model.Movie
+import com.example.film_catalog_android.domain.usecase.watchlist.ObserveWatchListIdsUseCase
+import com.example.film_catalog_android.domain.usecase.watchlist.ToggleWatchListUseCase
 import com.example.film_catalog_android.domain.repository.MovieRepository
 import com.example.film_catalog_android.domain.repository.WatchListRepository
 import com.example.film_catalog_android.domain.usecase.movie.GetMovieGenresUseCase
@@ -26,12 +28,16 @@ class HomeViewModel(
     private val getMovieGenresUseCase = GetMovieGenresUseCase(movieRepository)
     private val getMovieYearsUseCase = GetMovieYearsUseCase(movieRepository)
 
+
     // Пока старый вариант
     private val watchListRepository: WatchListRepository =
         WatchListRepositoryImpl(
             watchListDao = DatabaseProvider.getDatabase().watchListDao(),
             movieRepository = movieRepository
         )
+
+    private val observeWatchListIdsUseCase = ObserveWatchListIdsUseCase(watchListRepository)
+    private val toggleWatchListUseCase = ToggleWatchListUseCase(watchListRepository)
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -119,7 +125,7 @@ class HomeViewModel(
 
     fun toggleWatchList(movie: Movie) {
         viewModelScope.launch {
-            watchListRepository.toggleMovie(movie)
+            toggleWatchListUseCase(movie)
         }
     }
 
@@ -127,7 +133,7 @@ class HomeViewModel(
         viewModelScope.launch {
             combine(
                 movieRepository.observeMovies(),
-                watchListRepository.observeWatchListIds()
+                observeWatchListIdsUseCase()
             ) { movies, watchListIds ->
                 movies.map { movie ->
                     movie.copy(

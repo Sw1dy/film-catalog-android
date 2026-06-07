@@ -8,6 +8,8 @@ import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.data.repository.WatchListRepositoryImpl
 import com.example.film_catalog_android.domain.repository.MovieRepository
 import com.example.film_catalog_android.domain.repository.WatchListRepository
+import com.example.film_catalog_android.domain.usecase.watchlist.ObserveWatchListUseCase
+import com.example.film_catalog_android.domain.usecase.watchlist.RemoveFromWatchListUseCase
 import com.example.film_catalog_android.domain.model.Movie
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,11 +21,16 @@ class ProfileViewModel : ViewModel() {
 
     private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
 
+    //Временно оставляем
     private val watchListRepository: WatchListRepository =
         WatchListRepositoryImpl(
             watchListDao = DatabaseProvider.getDatabase().watchListDao(),
             movieRepository = movieRepository
         )
+
+    private val observeWatchListUseCase = ObserveWatchListUseCase(watchListRepository)
+    private val removeFromWatchListUseCase = RemoveFromWatchListUseCase(watchListRepository)
+
     private var allMovies: List<Movie> = emptyList()
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
@@ -35,13 +42,13 @@ class ProfileViewModel : ViewModel() {
 
     fun removeFromWatchList(movieId: Long) {
         viewModelScope.launch {
-            watchListRepository.removeMovie(movieId)
+            removeFromWatchListUseCase(movieId)
         }
     }
 
     private fun observeWatchList() {
         viewModelScope.launch {
-            watchListRepository.observeWatchList().collect { movies ->
+            observeWatchListUseCase().collect { movies ->
                 allMovies = movies.map { movie ->
                     movie.copy(isInWatchlist = true)
                 }
