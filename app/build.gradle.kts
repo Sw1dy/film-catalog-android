@@ -59,6 +59,10 @@ dependencies {
     implementation("androidx.room:room-ktx:2.8.4")
     kapt("androidx.room:room-compiler:2.8.4")
 
+    //Koin
+    implementation("io.insert-koin:koin-android:4.0.0")
+    implementation("io.insert-koin:koin-androidx-compose:4.0.0")
+
     //Зависимости для Ktor Client
     implementation("io.ktor:ktor-client-core:3.0.3")
     implementation("io.ktor:ktor-client-android:3.0.3")
