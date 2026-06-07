@@ -4,12 +4,15 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.film_catalog_android.data.local.DatabaseProvider
-import com.example.film_catalog_android.data.repository.RemoteMovieRepository
 import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.data.repository.SearchHistoryRepositoryImpl
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
 import com.example.film_catalog_android.domain.repository.SearchHistoryRepository
+import com.example.film_catalog_android.domain.usecase.history.AddSearchHistoryUseCase
+import com.example.film_catalog_android.domain.usecase.history.ClearSearchHistoryUseCase
+import com.example.film_catalog_android.domain.usecase.history.ObserveSearchHistoryUseCase
+import com.example.film_catalog_android.domain.usecase.movie.SearchMoviesUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +31,11 @@ class SearchViewModel(
             DatabaseProvider.getDatabase().searchHistoryDao()
         )
 
+    private val searchMoviesUseCase = SearchMoviesUseCase(movieRepository)
+    private val observeSearchHistoryUseCase = ObserveSearchHistoryUseCase(searchHistoryRepository)
+    private val addSearchHistoryUseCase = AddSearchHistoryUseCase(searchHistoryRepository)
+    private val clearSearchHistoryUseCase = ClearSearchHistoryUseCase(searchHistoryRepository)
+
     private val queryKey = "search_query"
 
     private var searchJob: Job? = null
@@ -41,6 +49,11 @@ class SearchViewModel(
 
     init {
         observeHistory()
+
+        val savedQuery = _uiState.value.query
+        if (savedQuery.isNotBlank()) {
+            onQueryChange(savedQuery)
+        }
     }
 
     fun onQueryChange(query: String) {
@@ -99,7 +112,7 @@ class SearchViewModel(
 
     fun clearHistory() {
         viewModelScope.launch {
-            searchHistoryRepository.clearHistory()
+            clearSearchHistoryUseCase()
         }
     }
 
@@ -109,7 +122,7 @@ class SearchViewModel(
 
     fun onResultClick(movie: Movie) {
         viewModelScope.launch {
-            searchHistoryRepository.addToHistory(
+            addSearchHistoryUseCase(
                 movieId = movie.id,
                 title = movie.title
             )
@@ -118,7 +131,7 @@ class SearchViewModel(
 
     private fun observeHistory() {
         viewModelScope.launch {
-            searchHistoryRepository.observeHistory().collect { history ->
+            observeSearchHistoryUseCase().collect { history ->
                 _uiState.value = _uiState.value.copy(
                     history = history
                 )
@@ -134,7 +147,7 @@ class SearchViewModel(
         )
 
         try {
-            val movies = movieRepository.searchMovies(query)
+            val movies = searchMoviesUseCase(query)
 
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
