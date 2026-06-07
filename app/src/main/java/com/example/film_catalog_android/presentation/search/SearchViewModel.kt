@@ -3,9 +3,7 @@ package com.example.film_catalog_android.presentation.search
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.film_catalog_android.data.local.DatabaseProvider
 import com.example.film_catalog_android.data.repository.RepositoryProvider
-import com.example.film_catalog_android.data.repository.SearchHistoryRepositoryImpl
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
 import com.example.film_catalog_android.domain.repository.SearchHistoryRepository
@@ -25,12 +23,8 @@ class SearchViewModel(
 ) : ViewModel() {
 
     private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
-
     private val searchHistoryRepository: SearchHistoryRepository =
-        SearchHistoryRepositoryImpl(
-            DatabaseProvider.getDatabase().searchHistoryDao()
-        )
-
+        RepositoryProvider.searchHistoryRepository
     private val searchMoviesUseCase = SearchMoviesUseCase(movieRepository)
     private val observeSearchHistoryUseCase = ObserveSearchHistoryUseCase(searchHistoryRepository)
     private val addSearchHistoryUseCase = AddSearchHistoryUseCase(searchHistoryRepository)

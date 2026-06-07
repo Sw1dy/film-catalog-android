@@ -2,18 +2,16 @@ package com.example.film_catalog_android.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.film_catalog_android.data.local.DatabaseProvider
 import com.example.film_catalog_android.data.local.UserSessionStorage
 import com.example.film_catalog_android.data.repository.RepositoryProvider
-import com.example.film_catalog_android.data.repository.WatchListRepositoryImpl
 import com.example.film_catalog_android.domain.model.Movie
-import com.example.film_catalog_android.domain.usecase.watchlist.ObserveWatchListIdsUseCase
-import com.example.film_catalog_android.domain.usecase.watchlist.ToggleWatchListUseCase
 import com.example.film_catalog_android.domain.repository.MovieRepository
 import com.example.film_catalog_android.domain.repository.WatchListRepository
 import com.example.film_catalog_android.domain.usecase.movie.GetMovieGenresUseCase
 import com.example.film_catalog_android.domain.usecase.movie.GetMovieYearsUseCase
 import com.example.film_catalog_android.domain.usecase.movie.GetMoviesUseCase
+import com.example.film_catalog_android.domain.usecase.watchlist.ObserveWatchListIdsUseCase
+import com.example.film_catalog_android.domain.usecase.watchlist.ToggleWatchListUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,15 +25,8 @@ class HomeViewModel(
     private val getMoviesUseCase = GetMoviesUseCase(movieRepository)
     private val getMovieGenresUseCase = GetMovieGenresUseCase(movieRepository)
     private val getMovieYearsUseCase = GetMovieYearsUseCase(movieRepository)
-
-
-    // Пока старый вариант
     private val watchListRepository: WatchListRepository =
-        WatchListRepositoryImpl(
-            watchListDao = DatabaseProvider.getDatabase().watchListDao(),
-            movieRepository = movieRepository
-        )
-
+        RepositoryProvider.watchListRepository
     private val observeWatchListIdsUseCase = ObserveWatchListIdsUseCase(watchListRepository)
     private val toggleWatchListUseCase = ToggleWatchListUseCase(watchListRepository)
 

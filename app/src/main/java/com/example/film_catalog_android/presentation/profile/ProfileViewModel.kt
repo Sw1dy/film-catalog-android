@@ -2,11 +2,8 @@ package com.example.film_catalog_android.presentation.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.film_catalog_android.data.local.DatabaseProvider
 import com.example.film_catalog_android.data.local.UserSessionStorage
 import com.example.film_catalog_android.data.repository.RepositoryProvider
-import com.example.film_catalog_android.data.repository.WatchListRepositoryImpl
-import com.example.film_catalog_android.domain.repository.MovieRepository
 import com.example.film_catalog_android.domain.repository.WatchListRepository
 import com.example.film_catalog_android.domain.usecase.watchlist.ObserveWatchListUseCase
 import com.example.film_catalog_android.domain.usecase.watchlist.RemoveFromWatchListUseCase
@@ -19,15 +16,8 @@ import kotlin.collections.filter
 
 class ProfileViewModel : ViewModel() {
 
-    private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
-
-    //Временно оставляем
     private val watchListRepository: WatchListRepository =
-        WatchListRepositoryImpl(
-            watchListDao = DatabaseProvider.getDatabase().watchListDao(),
-            movieRepository = movieRepository
-        )
-
+        RepositoryProvider.watchListRepository
     private val observeWatchListUseCase = ObserveWatchListUseCase(watchListRepository)
     private val removeFromWatchListUseCase = RemoveFromWatchListUseCase(watchListRepository)
 

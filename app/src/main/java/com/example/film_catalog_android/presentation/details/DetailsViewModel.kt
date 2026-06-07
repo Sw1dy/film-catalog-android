@@ -3,10 +3,7 @@ package com.example.film_catalog_android.presentation.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.film_catalog_android.data.local.DatabaseProvider
-import com.example.film_catalog_android.data.repository.RemoteMovieRepository
 import com.example.film_catalog_android.data.repository.RepositoryProvider
-import com.example.film_catalog_android.data.repository.WatchListRepositoryImpl
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
 import com.example.film_catalog_android.domain.repository.WatchListRepository
@@ -24,14 +21,8 @@ class DetailsViewModel(
 ) : ViewModel() {
 
     private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
-
-    //Временно так
     private val watchListRepository: WatchListRepository =
-        WatchListRepositoryImpl(
-            watchListDao = DatabaseProvider.getDatabase().watchListDao(),
-            movieRepository = movieRepository
-        )
-
+        RepositoryProvider.watchListRepository
     private val getMovieByIdUseCase = GetMovieByIdUseCase(movieRepository)
     private val observeWatchListIdsUseCase = ObserveWatchListIdsUseCase(watchListRepository)
     private val toggleWatchListUseCase = ToggleWatchListUseCase(watchListRepository)

@@ -4,7 +4,6 @@ import com.example.film_catalog_android.data.local.UserSessionStorage
 import com.example.film_catalog_android.data.local.dao.WatchListDao
 import com.example.film_catalog_android.data.local.entity.WatchListEntity
 import com.example.film_catalog_android.domain.model.Movie
-import com.example.film_catalog_android.domain.repository.MovieRepository
 import com.example.film_catalog_android.domain.repository.WatchListRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -14,8 +13,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 class WatchListRepositoryImpl(
-    private val watchListDao: WatchListDao,
-    private val movieRepository: MovieRepository
+    private val watchListDao: WatchListDao
 ) : WatchListRepository {
 
     @OptIn(ExperimentalCoroutinesApi::class)
