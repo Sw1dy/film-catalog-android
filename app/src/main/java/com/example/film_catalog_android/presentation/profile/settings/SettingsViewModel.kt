@@ -4,16 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.film_catalog_android.data.local.ThemeStorage
 import com.example.film_catalog_android.data.local.UserSessionStorage
-import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.domain.usecase.auth.LogoutUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class SettingsViewModel : ViewModel() {
-
-    private val logoutUseCase = LogoutUseCase(RepositoryProvider.authRepository)
+class SettingsViewModel(
+    private val logoutUseCase: LogoutUseCase
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()

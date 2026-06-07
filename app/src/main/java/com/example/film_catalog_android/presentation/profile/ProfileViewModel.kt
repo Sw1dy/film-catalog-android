@@ -3,8 +3,6 @@ package com.example.film_catalog_android.presentation.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.film_catalog_android.data.local.UserSessionStorage
-import com.example.film_catalog_android.data.repository.RepositoryProvider
-import com.example.film_catalog_android.domain.repository.WatchListRepository
 import com.example.film_catalog_android.domain.usecase.watchlist.ObserveWatchListUseCase
 import com.example.film_catalog_android.domain.usecase.watchlist.RemoveFromWatchListUseCase
 import com.example.film_catalog_android.domain.model.Movie
@@ -14,12 +12,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlin.collections.filter
 
-class ProfileViewModel : ViewModel() {
-
-    private val watchListRepository: WatchListRepository =
-        RepositoryProvider.watchListRepository
-    private val observeWatchListUseCase = ObserveWatchListUseCase(watchListRepository)
-    private val removeFromWatchListUseCase = RemoveFromWatchListUseCase(watchListRepository)
+class ProfileViewModel(
+    private val observeWatchListUseCase: ObserveWatchListUseCase,
+    private val removeFromWatchListUseCase: RemoveFromWatchListUseCase
+) : ViewModel() {
 
     private var allMovies: List<Movie> = emptyList()
     private val _uiState = MutableStateFlow(ProfileUiState())

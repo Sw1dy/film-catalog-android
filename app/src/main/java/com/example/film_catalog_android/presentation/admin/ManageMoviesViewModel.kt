@@ -2,11 +2,10 @@ package com.example.film_catalog_android.presentation.admin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.domain.model.Movie
-import com.example.film_catalog_android.domain.repository.MovieRepository
 import com.example.film_catalog_android.domain.usecase.movie.DeleteMovieUseCase
 import com.example.film_catalog_android.domain.usecase.movie.GetMoviesUseCase
+import com.example.film_catalog_android.domain.usecase.movie.ObserveMoviesUseCase
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,11 +16,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 class ManageMoviesViewModel(
-    private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
+    private val getMoviesUseCase: GetMoviesUseCase,
+    private val observeMoviesUseCase: ObserveMoviesUseCase,
+    private val deleteMovieUseCase: DeleteMovieUseCase
 ) : ViewModel() {
-
-    private val getMoviesUseCase = GetMoviesUseCase(movieRepository)
-    private val deleteMovieUseCase = DeleteMovieUseCase(movieRepository)
 
     private var allMovies: List<Movie> = emptyList()
 
@@ -90,7 +88,7 @@ class ManageMoviesViewModel(
     private fun observeMoviesWithDebounce() {
         viewModelScope.launch {
             combine(
-                movieRepository.observeMovies(),
+                observeMoviesUseCase(),
                 queryFlow
                     .debounce(250)
                     .distinctUntilChanged()

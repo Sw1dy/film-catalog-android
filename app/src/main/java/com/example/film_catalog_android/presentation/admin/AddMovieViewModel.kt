@@ -2,9 +2,7 @@ package com.example.film_catalog_android.presentation.admin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.domain.model.Movie
-import com.example.film_catalog_android.domain.repository.MovieRepository
 import com.example.film_catalog_android.domain.usecase.movie.AddMovieUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,10 +10,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AddMovieViewModel(
-    private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
+    private val addMovieUseCase: AddMovieUseCase
 ) : ViewModel() {
-
-    private val addMovieUseCase = AddMovieUseCase(movieRepository)
 
     private val _uiState = MutableStateFlow(MovieFormUiState())
     val uiState: StateFlow<MovieFormUiState> = _uiState.asStateFlow()

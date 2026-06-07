@@ -3,10 +3,7 @@ package com.example.film_catalog_android.presentation.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.domain.model.Movie
-import com.example.film_catalog_android.domain.repository.MovieRepository
-import com.example.film_catalog_android.domain.repository.WatchListRepository
 import com.example.film_catalog_android.domain.usecase.movie.GetMovieByIdUseCase
 import com.example.film_catalog_android.domain.usecase.watchlist.ObserveWatchListIdsUseCase
 import com.example.film_catalog_android.domain.usecase.watchlist.ToggleWatchListUseCase
@@ -17,15 +14,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class DetailsViewModel(
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val getMovieByIdUseCase: GetMovieByIdUseCase,
+    private val observeWatchListIdsUseCase: ObserveWatchListIdsUseCase,
+    private val toggleWatchListUseCase: ToggleWatchListUseCase
 ) : ViewModel() {
-
-    private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
-    private val watchListRepository: WatchListRepository =
-        RepositoryProvider.watchListRepository
-    private val getMovieByIdUseCase = GetMovieByIdUseCase(movieRepository)
-    private val observeWatchListIdsUseCase = ObserveWatchListIdsUseCase(watchListRepository)
-    private val toggleWatchListUseCase = ToggleWatchListUseCase(watchListRepository)
 
     private val _uiState = MutableStateFlow(DetailsUiState())
     val uiState: StateFlow<DetailsUiState> = _uiState.asStateFlow()

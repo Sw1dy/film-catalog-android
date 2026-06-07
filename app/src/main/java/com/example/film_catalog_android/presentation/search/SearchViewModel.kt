@@ -3,10 +3,7 @@ package com.example.film_catalog_android.presentation.search
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.domain.model.Movie
-import com.example.film_catalog_android.domain.repository.MovieRepository
-import com.example.film_catalog_android.domain.repository.SearchHistoryRepository
 import com.example.film_catalog_android.domain.usecase.history.AddSearchHistoryUseCase
 import com.example.film_catalog_android.domain.usecase.history.ClearSearchHistoryUseCase
 import com.example.film_catalog_android.domain.usecase.history.ObserveSearchHistoryUseCase
@@ -19,16 +16,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val searchMoviesUseCase: SearchMoviesUseCase,
+    private val observeSearchHistoryUseCase: ObserveSearchHistoryUseCase,
+    private val addSearchHistoryUseCase: AddSearchHistoryUseCase,
+    private val clearSearchHistoryUseCase: ClearSearchHistoryUseCase
 ) : ViewModel() {
-
-    private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
-    private val searchHistoryRepository: SearchHistoryRepository =
-        RepositoryProvider.searchHistoryRepository
-    private val searchMoviesUseCase = SearchMoviesUseCase(movieRepository)
-    private val observeSearchHistoryUseCase = ObserveSearchHistoryUseCase(searchHistoryRepository)
-    private val addSearchHistoryUseCase = AddSearchHistoryUseCase(searchHistoryRepository)
-    private val clearSearchHistoryUseCase = ClearSearchHistoryUseCase(searchHistoryRepository)
 
     private val queryKey = "search_query"
 

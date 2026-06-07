@@ -3,13 +3,11 @@ package com.example.film_catalog_android.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.film_catalog_android.data.local.UserSessionStorage
-import com.example.film_catalog_android.data.repository.RepositoryProvider
 import com.example.film_catalog_android.domain.model.Movie
-import com.example.film_catalog_android.domain.repository.MovieRepository
-import com.example.film_catalog_android.domain.repository.WatchListRepository
 import com.example.film_catalog_android.domain.usecase.movie.GetMovieGenresUseCase
 import com.example.film_catalog_android.domain.usecase.movie.GetMovieYearsUseCase
 import com.example.film_catalog_android.domain.usecase.movie.GetMoviesUseCase
+import com.example.film_catalog_android.domain.usecase.movie.ObserveMoviesUseCase
 import com.example.film_catalog_android.domain.usecase.watchlist.ObserveWatchListIdsUseCase
 import com.example.film_catalog_android.domain.usecase.watchlist.ToggleWatchListUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,16 +17,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
+    private val getMoviesUseCase: GetMoviesUseCase,
+    private val observeMoviesUseCase: ObserveMoviesUseCase,
+    private val getMovieGenresUseCase: GetMovieGenresUseCase,
+    private val getMovieYearsUseCase: GetMovieYearsUseCase,
+    private val observeWatchListIdsUseCase: ObserveWatchListIdsUseCase,
+    private val toggleWatchListUseCase: ToggleWatchListUseCase
 ) : ViewModel() {
-
-    private val getMoviesUseCase = GetMoviesUseCase(movieRepository)
-    private val getMovieGenresUseCase = GetMovieGenresUseCase(movieRepository)
-    private val getMovieYearsUseCase = GetMovieYearsUseCase(movieRepository)
-    private val watchListRepository: WatchListRepository =
-        RepositoryProvider.watchListRepository
-    private val observeWatchListIdsUseCase = ObserveWatchListIdsUseCase(watchListRepository)
-    private val toggleWatchListUseCase = ToggleWatchListUseCase(watchListRepository)
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -123,7 +118,7 @@ class HomeViewModel(
     private fun observeMovies() {
         viewModelScope.launch {
             combine(
-                movieRepository.observeMovies(),
+                observeMoviesUseCase(),
                 observeWatchListIdsUseCase()
             ) { movies, watchListIds ->
                 movies.map { movie ->
