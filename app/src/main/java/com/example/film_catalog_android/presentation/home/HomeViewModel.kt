@@ -9,6 +9,9 @@ import com.example.film_catalog_android.data.repository.WatchListRepositoryImpl
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
 import com.example.film_catalog_android.domain.repository.WatchListRepository
+import com.example.film_catalog_android.domain.usecase.movie.GetMovieGenresUseCase
+import com.example.film_catalog_android.domain.usecase.movie.GetMovieYearsUseCase
+import com.example.film_catalog_android.domain.usecase.movie.GetMoviesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +22,11 @@ class HomeViewModel(
     private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
 ) : ViewModel() {
 
+    private val getMoviesUseCase = GetMoviesUseCase(movieRepository)
+    private val getMovieGenresUseCase = GetMovieGenresUseCase(movieRepository)
+    private val getMovieYearsUseCase = GetMovieYearsUseCase(movieRepository)
+
+    // Пока старый вариант
     private val watchListRepository: WatchListRepository =
         WatchListRepositoryImpl(
             watchListDao = DatabaseProvider.getDatabase().watchListDao(),
@@ -45,7 +53,7 @@ class HomeViewModel(
             )
 
             try {
-                movieRepository.getMovies(
+                getMoviesUseCase(
                     genre = currentState.selectedGenre,
                     year = currentState.selectedYear
                 )
@@ -66,8 +74,8 @@ class HomeViewModel(
             )
 
             try {
-                val genres = movieRepository.getGenres()
-                val years = movieRepository.getYears()
+                val genres = getMovieGenresUseCase()
+                val years = getMovieYearsUseCase()
 
                 _uiState.value = _uiState.value.copy(
                     availableGenres = genres,
@@ -88,6 +96,7 @@ class HomeViewModel(
         _uiState.value = _uiState.value.copy(
             selectedGenre = genre
         )
+
         loadMovies()
     }
 
@@ -95,6 +104,7 @@ class HomeViewModel(
         _uiState.value = _uiState.value.copy(
             selectedYear = year
         )
+
         loadMovies()
     }
 
@@ -103,6 +113,7 @@ class HomeViewModel(
             selectedGenre = null,
             selectedYear = null
         )
+
         loadMovies()
     }
 
