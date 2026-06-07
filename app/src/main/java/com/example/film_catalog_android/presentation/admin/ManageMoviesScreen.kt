@@ -34,18 +34,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.film_catalog_android.core.ui.movie.RatingBadge
 import com.example.film_catalog_android.domain.model.Movie
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.graphics.Color
 import com.example.film_catalog_android.core.ui.movie.MovieImage
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ManageMoviesScreen(
     onBackClick: () -> Unit,
     onEditMovieClick: (Long) -> Unit,
-    viewModel: ManageMoviesViewModel = viewModel()
+    viewModel: ManageMoviesViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

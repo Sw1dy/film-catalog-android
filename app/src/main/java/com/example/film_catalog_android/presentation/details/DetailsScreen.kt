@@ -27,18 +27,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.layout.PaddingValues
 import com.example.film_catalog_android.core.ui.movie.RatingBadge
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
 import com.example.film_catalog_android.core.ui.movie.MovieImage
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun DetailsScreen(
     onBackClick: () -> Unit,
-    viewModel: DetailsViewModel = viewModel()
+    viewModel: DetailsViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

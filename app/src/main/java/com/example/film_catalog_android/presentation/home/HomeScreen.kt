@@ -30,18 +30,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.film_catalog_android.core.ui.movie.LandscapeMovieCard
 import com.example.film_catalog_android.core.ui.movie.MovieCard
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.core.ui.filter.MovieFiltersPanel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
     onMovieClick: (Long) -> Unit,
     onAddMovieClick: () -> Unit,
     onManageMoviesClick: () -> Unit,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

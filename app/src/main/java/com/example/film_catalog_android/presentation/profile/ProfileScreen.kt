@@ -26,16 +26,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.film_catalog_android.core.ui.filter.MovieFiltersPanel
 import com.example.film_catalog_android.core.ui.movie.LandscapeMovieCard
 import com.example.film_catalog_android.core.ui.movie.MovieCard
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ProfileScreen(
     onMovieClick: (Long) -> Unit,
     onSettingsClick: () -> Unit,
-    viewModel: ProfileViewModel = viewModel()
+    viewModel: ProfileViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

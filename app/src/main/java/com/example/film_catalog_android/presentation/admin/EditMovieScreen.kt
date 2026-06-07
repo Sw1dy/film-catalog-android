@@ -22,14 +22,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.film_catalog_android.core.ui.form.MovieFormTextField
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun EditMovieScreen(
     onBackClick: () -> Unit,
     onMovieSaved: () -> Unit,
-    viewModel: EditMovieViewModel = viewModel()
+    viewModel: EditMovieViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
