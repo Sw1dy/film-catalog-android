@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WatchListDao {
+    @Query("SELECT * FROM watchlist WHERE userId = :userId")
+    fun observeWatchList(userId: Long): Flow<List<WatchListEntity>>
 
     @Query("SELECT movieId FROM watchlist WHERE userId = :userId")
     fun observeWatchListIds(userId: Long): Flow<List<Long>>

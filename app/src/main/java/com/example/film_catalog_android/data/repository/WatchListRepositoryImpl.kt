@@ -20,9 +20,15 @@ class WatchListRepositoryImpl(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun observeWatchList(): Flow<List<Movie>> {
-        return observeWatchListIds().map { movieIds ->
-            movieIds.mapNotNull { movieId ->
-                movieRepository.getMovieById(movieId)
+        return UserSessionStorage.userId.flatMapLatest { userId ->
+            if (userId == null) {
+                flowOf(emptyList())
+            } else {
+                watchListDao.observeWatchList(userId).map { entities ->
+                    entities.map { entity ->
+                        entity.toDomain()
+                    }
+                }
             }
         }
     }
@@ -42,6 +48,7 @@ class WatchListRepositoryImpl(
 
     override suspend fun toggleMovie(movie: Movie) {
         val userId = UserSessionStorage.userId.first() ?: return
+
         val isInWatchList = watchListDao.isMovieInWatchList(
             userId = userId,
             movieId = movie.id
@@ -51,10 +58,7 @@ class WatchListRepositoryImpl(
             watchListDao.delete(userId, movie.id)
         } else {
             watchListDao.insert(
-                WatchListEntity(
-                    userId = userId,
-                    movieId = movie.id
-                )
+                movie.toWatchListEntity(userId)
             )
         }
     }
@@ -62,5 +66,31 @@ class WatchListRepositoryImpl(
     override suspend fun removeMovie(movieId: Long) {
         val userId = UserSessionStorage.userId.first() ?: return
         watchListDao.delete(userId, movieId)
+    }
+
+    private fun WatchListEntity.toDomain(): Movie {
+        return Movie(
+            id = movieId,
+            title = title,
+            description = description,
+            year = year,
+            genre = genre,
+            rating = rating,
+            imageUrl = imageUrl,
+            isInWatchlist = true
+        )
+    }
+
+    private fun Movie.toWatchListEntity(userId: Long): WatchListEntity {
+        return WatchListEntity(
+            userId = userId,
+            movieId = id,
+            title = title,
+            description = description,
+            year = year,
+            genre = genre,
+            rating = rating,
+            imageUrl = imageUrl
+        )
     }
 }

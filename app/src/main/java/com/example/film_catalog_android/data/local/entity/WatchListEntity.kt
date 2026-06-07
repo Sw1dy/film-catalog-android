@@ -8,5 +8,11 @@ import androidx.room.Entity
 )
 data class WatchListEntity(
     val userId: Long,
-    val movieId: Long
+    val movieId: Long,
+    val title: String,
+    val description: String,
+    val year: Int,
+    val genre: String,
+    val rating: Double,
+    val imageUrl: String
 )
