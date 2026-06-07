@@ -10,6 +10,9 @@ import com.example.film_catalog_android.data.repository.WatchListRepositoryImpl
 import com.example.film_catalog_android.domain.model.Movie
 import com.example.film_catalog_android.domain.repository.MovieRepository
 import com.example.film_catalog_android.domain.repository.WatchListRepository
+import com.example.film_catalog_android.domain.usecase.movie.GetMovieByIdUseCase
+import com.example.film_catalog_android.domain.usecase.watchlist.ObserveWatchListIdsUseCase
+import com.example.film_catalog_android.domain.usecase.watchlist.ToggleWatchListUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,11 +25,16 @@ class DetailsViewModel(
 
     private val movieRepository: MovieRepository = RepositoryProvider.movieRepository
 
+    //Временно так
     private val watchListRepository: WatchListRepository =
         WatchListRepositoryImpl(
             watchListDao = DatabaseProvider.getDatabase().watchListDao(),
             movieRepository = movieRepository
         )
+
+    private val getMovieByIdUseCase = GetMovieByIdUseCase(movieRepository)
+    private val observeWatchListIdsUseCase = ObserveWatchListIdsUseCase(watchListRepository)
+    private val toggleWatchListUseCase = ToggleWatchListUseCase(watchListRepository)
 
     private val _uiState = MutableStateFlow(DetailsUiState())
     val uiState: StateFlow<DetailsUiState> = _uiState.asStateFlow()
@@ -55,8 +63,8 @@ class DetailsViewModel(
             )
 
             try {
-                val movie = movieRepository.getMovieById(movieId)
-                val watchListIds = watchListRepository.observeWatchListIds().first()
+                val movie = getMovieByIdUseCase(movieId)
+                val watchListIds = observeWatchListIdsUseCase().first()
 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -78,13 +86,13 @@ class DetailsViewModel(
         val movie = _uiState.value.movie ?: return
 
         viewModelScope.launch {
-            watchListRepository.toggleMovie(movie)
+            toggleWatchListUseCase(movie)
         }
     }
 
     private fun observeWatchList() {
         viewModelScope.launch {
-            watchListRepository.observeWatchListIds().collect { watchListIds ->
+            observeWatchListIdsUseCase().collect { watchListIds ->
                 val movie = _uiState.value.movie ?: return@collect
 
                 _uiState.value = _uiState.value.copy(
